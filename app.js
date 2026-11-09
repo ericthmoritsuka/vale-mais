@@ -15,8 +15,13 @@ const LETTERS = 'ABCDEFGHIJ';
 
 const list = document.getElementById('products');
 const template = document.getElementById('card-template');
+const valuesTemplate = document.getElementById('values-template');
 const addButton = document.getElementById('add');
 const resultBody = document.getElementById('result-body');
+
+// The groups whose values the person opened, by dimension. Empty on load, so
+// every result starts with only the percent showing.
+const openValues = new Set();
 
 let products = loadProducts() || [blankProduct(), blankProduct()];
 
@@ -144,8 +149,8 @@ function renderResult(result) {
 
 		block.append(element('p', 'headline', item.headline));
 
-		if (item.detail) {
-			block.append(element('p', 'detail', item.detail));
+		if (item.values.length) {
+			block.append(valuesBlock(item));
 		}
 
 		if (item.tipoWarning) {
@@ -185,6 +190,51 @@ function renderResult(result) {
 
 	resultBody.replaceChildren(...parts);
 }
+
+// "Ver valores" and the reais it shows: per unit and for the same purchase,
+// against each product the 1st beats.
+function valuesBlock(group) {
+	const block = valuesTemplate.content.firstElementChild.cloneNode(true);
+	const button = block.querySelector('.values-toggle');
+	const panel = block.querySelector('.values-panel');
+	const open = openValues.has(group.dimension);
+
+	panel.id = `values-${group.dimension}`;
+	button.dataset.dimension = group.dimension;
+	button.setAttribute('aria-controls', panel.id);
+	button.setAttribute('aria-expanded', String(open));
+	panel.hidden = !open;
+
+	for (const line of group.values) {
+		const entry = element('div', 'values-item');
+
+		entry.append(element('p', 'values-unit', line.perUnit), element('p', 'values-saving', line.saving));
+		panel.append(entry);
+	}
+
+	return block;
+}
+
+resultBody.addEventListener('click', (event) => {
+	const button = event.target.closest('.values-toggle');
+
+	if (!button) {
+		return;
+	}
+
+	const open = button.getAttribute('aria-expanded') !== 'true';
+	const dimension = button.dataset.dimension;
+
+	button.setAttribute('aria-expanded', String(open));
+	document.getElementById(button.getAttribute('aria-controls')).hidden = !open;
+
+	if (open) {
+		openValues.add(dimension);
+	}
+	else {
+		openValues.delete(dimension);
+	}
+});
 
 // The price a ranking row used, named by its kind (DESIGN.md section 4).
 function kindText(index, evaluated) {
@@ -262,6 +312,7 @@ document.getElementById('clear').addEventListener('click', () => {
 	}
 
 	clearProducts();
+	openValues.clear();
 	products = [blankProduct(), blankProduct()];
 	buildCards();
 	window.scrollTo({top: 0});

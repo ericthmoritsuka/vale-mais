@@ -41,6 +41,16 @@
 		<button type="button" id="update-button">Atualizar</button>
 	</div>
 
+	<!-- The reais behind a comparison's percent, one per result group. It
+	     starts collapsed; app.js opens it on a tap and keeps it open while
+	     the person types. -->
+	<template id="values-template">
+		<div class="values">
+			<button class="values-toggle" type="button" aria-expanded="false">Ver valores</button>
+			<div class="values-panel" hidden></div>
+		</div>
+	</template>
+
 	<template id="card-template">
 		<article class="card">
 			<header class="card-head">
