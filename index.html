@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+	<title>Vale Mais</title>
+	<meta name="description" content="Compare o preço por quilo, litro, metro ou unidade de produtos no supermercado.">
+	<meta name="theme-color" content="#0b6e4f" media="(prefers-color-scheme: light)">
+	<meta name="theme-color" content="#10251d" media="(prefers-color-scheme: dark)">
+	<meta name="mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-title" content="Vale Mais">
+	<link rel="manifest" href="manifest.webmanifest">
+	<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+	<link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
+	<link rel="stylesheet" href="style.css">
+	<script type="module" src="app.js"></script>
+</head>
+<body>
+	<header class="top">
+		<h1>Vale Mais</h1>
+		<button class="top-button" id="clear" type="button">Limpar</button>
+	</header>
+
+	<main class="page">
+		<h2 class="screen-title">Comparar</h2>
+		<p class="hint">Preencha preço, quantidade e tamanho. O resultado aparece embaixo.</p>
+
+		<div class="products" id="products"></div>
+
+		<button class="add" id="add" type="button">+ Adicionar produto</button>
+
+		<section class="result" id="result" aria-live="polite" aria-labelledby="result-title">
+			<h2 class="result-title" id="result-title">Resultado</h2>
+			<div id="result-body"></div>
+		</section>
+	</main>
+
+	<div class="update" id="update" role="status" hidden>
+		<span>Nova versão pronta.</span>
+		<button type="button" id="update-button">Atualizar</button>
+	</div>
+
+	<template id="card-template">
+		<article class="card">
+			<header class="card-head">
+				<h3 class="card-title"></h3>
+				<span class="badge" hidden></span>
+				<button class="remove" type="button" data-action="remove">Remover</button>
+			</header>
+
+			<label class="field">
+				<span class="label">Nome (opcional)</span>
+				<input data-field="name" type="text" autocomplete="off" enterkeyhint="next" placeholder="ex.: Papel Neve">
+			</label>
+
+			<div class="row">
+				<label class="field">
+					<span class="label">Preço (R$)</span>
+					<input data-field="price" type="text" inputmode="decimal" autocomplete="off" enterkeyhint="next" placeholder="0,00">
+				</label>
+				<label class="field">
+					<span class="label">Qtd. no pacote</span>
+					<input data-field="pack" type="text" inputmode="numeric" autocomplete="off" enterkeyhint="next" placeholder="1">
+				</label>
+			</div>
+
+			<div class="row">
+				<label class="field">
+					<span class="label">Tamanho de cada</span>
+					<input data-field="size" type="text" inputmode="decimal" autocomplete="off" enterkeyhint="next" placeholder="ex.: 30">
+				</label>
+				<label class="field">
+					<span class="label">Unidade</span>
+					<select data-field="unit">
+						<option value="g">g</option>
+						<option value="kg">kg</option>
+						<option value="ml">ml</option>
+						<option value="L">L</option>
+						<option value="un">un</option>
+						<option value="m">m</option>
+						<option value="folhas">folhas</option>
+					</select>
+				</label>
+			</div>
+
+			<p class="total" data-out="total"></p>
+
+			<label class="field">
+				<span class="label">Tipo de preço</span>
+				<select data-field="kind">
+					<option value="normal">Normal</option>
+					<option value="clube">Clube/app</option>
+					<option value="atacarejo">Atacarejo (a partir de N un.)</option>
+					<option value="leve">Leve X Pague Y</option>
+				</select>
+			</label>
+
+			<div class="row" data-show="atacarejo" hidden>
+				<label class="field">
+					<span class="label">A partir de (un.)</span>
+					<input data-field="minQty" type="text" inputmode="numeric" autocomplete="off" placeholder="ex.: 6">
+				</label>
+			</div>
+
+			<div class="row" data-show="leve" hidden>
+				<label class="field">
+					<span class="label">Leve</span>
+					<input data-field="leveX" type="text" inputmode="numeric" autocomplete="off" placeholder="3">
+				</label>
+				<label class="field">
+					<span class="label">Pague</span>
+					<input data-field="pagueY" type="text" inputmode="numeric" autocomplete="off" placeholder="2">
+				</label>
+			</div>
+
+			<details class="more">
+				<summary>Mais detalhes (opcional)</summary>
+				<label class="field">
+					<span class="label">Tipo</span>
+					<input data-field="tipo" type="text" autocomplete="off" placeholder="ex.: folha dupla">
+				</label>
+				<label class="field">
+					<span class="label" data-out="tag-label">Preço por kg na etiqueta</span>
+					<input data-field="tagPrice" type="text" inputmode="decimal" autocomplete="off" placeholder="0,00">
+				</label>
+			</details>
+
+			<div class="card-out">
+				<p class="unit-price" data-out="unit-price"></p>
+				<p class="note" data-out="notes"></p>
+				<p class="warn" data-out="tag" hidden></p>
+				<p class="missing" data-out="missing"></p>
+			</div>
+		</article>
+	</template>
+</body>
+</html>

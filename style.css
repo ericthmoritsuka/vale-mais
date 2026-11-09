@@ -1,0 +1,392 @@
+/* Vale Mais. Sizes that should grow with the phone's text size are in rem
+   (fonts, control heights); the page gutters are in px so large text does
+   not eat the width. Controls are at least 2.75rem (44 px at 16 px text). */
+
+:root {
+	--accent: #0b6e4f;
+	--accent-soft: #e2f3ea;
+	--bg: #f3f5f3;
+	--border: #cfd6d1;
+	--muted: #59625c;
+	--on-accent: #ffffff;
+	--surface: #ffffff;
+	--text: #18201b;
+	--warn-bg: #fff3d1;
+	--warn-border: #e6c25a;
+	--warn-text: #5c4300;
+	--winner-bg: #e9f7ef;
+
+	color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--accent: #4cc38a;
+		--accent-soft: #173527;
+		--bg: #111613;
+		--border: #34403a;
+		--muted: #a3ada7;
+		--on-accent: #0b1a12;
+		--surface: #1b211e;
+		--text: #e8eeea;
+		--warn-bg: #3a2f10;
+		--warn-border: #7a6420;
+		--warn-text: #f5dc93;
+		--winner-bg: #15291f;
+	}
+}
+
+* {
+	box-sizing: border-box;
+}
+
+html {
+	-webkit-text-size-adjust: 100%;
+	text-size-adjust: 100%;
+}
+
+body {
+	background: var(--bg);
+	color: var(--text);
+	font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+	font-size: 1rem;
+	line-height: 1.4;
+	margin: 0;
+	overflow-wrap: anywhere;
+}
+
+button,
+input,
+select {
+	color: inherit;
+	font: inherit;
+}
+
+[hidden] {
+	display: none !important;
+}
+
+/* ------------------------------------------------------------- header */
+
+.top {
+	align-items: center;
+	background: var(--accent);
+	color: var(--on-accent);
+	display: flex;
+	gap: 8px;
+	justify-content: space-between;
+	padding: calc(env(safe-area-inset-top) + 6px) 12px 6px;
+	position: sticky;
+	top: 0;
+	z-index: 2;
+}
+
+.top h1 {
+	font-size: 1.25rem;
+	margin: 0;
+}
+
+.top-button {
+	background: transparent;
+	border: 1px solid currentColor;
+	border-radius: 8px;
+	color: inherit;
+	min-height: 2.75rem;
+	padding: 0 0.9rem;
+}
+
+/* --------------------------------------------------------------- page */
+
+.page {
+	margin: 0 auto;
+	max-width: 40rem;
+	padding: 8px 10px calc(env(safe-area-inset-bottom) + 24px);
+}
+
+.screen-title {
+	font-size: 1.15rem;
+	margin: 0.5rem 2px 0;
+}
+
+.hint {
+	color: var(--muted);
+	font-size: 0.9rem;
+	margin: 0.15rem 2px 0.75rem;
+}
+
+.products {
+	display: grid;
+	gap: 12px;
+}
+
+/* --------------------------------------------------------------- card */
+
+.card {
+	background: var(--surface);
+	border: 1px solid var(--border);
+	border-radius: 12px;
+	display: grid;
+	gap: 0.6rem;
+	padding: 10px 12px 12px;
+	scroll-margin-top: 4rem;
+}
+
+.card.winner {
+	background: var(--winner-bg);
+	border: 2px solid var(--accent);
+	padding: 9px 11px 11px;
+}
+
+.card-head {
+	align-items: center;
+	display: flex;
+	gap: 8px;
+}
+
+.card-title {
+	font-size: 1.05rem;
+	margin: 0;
+}
+
+.badge {
+	background: var(--accent);
+	border-radius: 999px;
+	color: var(--on-accent);
+	font-size: 0.85rem;
+	font-weight: 600;
+	padding: 0.1rem 0.6rem;
+	white-space: nowrap;
+}
+
+.card:not(.winner) .badge {
+	background: var(--accent-soft);
+	color: var(--text);
+}
+
+.remove {
+	background: transparent;
+	border: 1px solid var(--border);
+	border-radius: 8px;
+	margin-left: auto;
+	min-height: 2.75rem;
+	padding: 0 0.75rem;
+}
+
+.row {
+	align-items: end;
+	display: grid;
+	gap: 8px;
+	grid-template-columns: 1fr 1fr;
+}
+
+.field {
+	display: grid;
+	gap: 0.2rem;
+	min-width: 0;
+}
+
+.label {
+	color: var(--muted);
+	font-size: 0.85rem;
+	line-height: 1.2;
+}
+
+input,
+select {
+	background: var(--surface);
+	border: 1px solid var(--border);
+	border-radius: 8px;
+	min-height: 2.75rem;
+	min-width: 0;
+	padding: 0.4rem 0.6rem;
+	width: 100%;
+}
+
+input:focus,
+select:focus,
+button:focus-visible,
+summary:focus-visible {
+	outline: 2px solid var(--accent);
+	outline-offset: 1px;
+}
+
+.total {
+	color: var(--muted);
+	font-size: 0.9rem;
+	margin: -0.2rem 2px 0;
+}
+
+.total:empty {
+	display: none;
+}
+
+.more summary {
+	align-items: center;
+	color: var(--accent);
+	cursor: pointer;
+	display: flex;
+	min-height: 2.75rem;
+}
+
+.more[open] {
+	display: grid;
+	gap: 0.6rem;
+}
+
+.card-out p {
+	margin: 0.2rem 0 0;
+}
+
+.card-out p:empty {
+	display: none;
+}
+
+.unit-price {
+	font-size: 1.35rem;
+	font-weight: 700;
+}
+
+.note,
+.missing {
+	color: var(--muted);
+	font-size: 0.9rem;
+}
+
+.warn {
+	background: var(--warn-bg);
+	border: 1px solid var(--warn-border);
+	border-radius: 8px;
+	color: var(--warn-text);
+	font-size: 0.95rem;
+	margin: 0.4rem 0 0;
+	padding: 0.5rem 0.65rem;
+}
+
+/* ---------------------------------------------------------------- add */
+
+.add {
+	background: var(--surface);
+	border: 2px dashed var(--border);
+	border-radius: 12px;
+	color: var(--accent);
+	font-weight: 600;
+	margin-top: 12px;
+	min-height: 3rem;
+	width: 100%;
+}
+
+/* ------------------------------------------------------------- result */
+
+.result {
+	background: var(--surface);
+	border: 1px solid var(--border);
+	border-radius: 12px;
+	margin-top: 16px;
+	padding: 10px 12px 12px;
+}
+
+.result-title {
+	font-size: 1.1rem;
+	margin: 0 0 0.4rem;
+}
+
+.result p {
+	margin: 0.3rem 0 0;
+}
+
+.group + .group {
+	border-top: 1px solid var(--border);
+	margin-top: 0.75rem;
+	padding-top: 0.5rem;
+}
+
+.group-title {
+	font-size: 1rem;
+	margin: 0.25rem 0 0;
+}
+
+.headline {
+	color: var(--accent);
+	font-size: 1.2rem;
+	font-weight: 700;
+}
+
+.detail,
+.empty {
+	color: var(--muted);
+}
+
+.ranking {
+	display: grid;
+	gap: 6px;
+	list-style: none;
+	margin: 0.6rem 0 0;
+	padding: 0;
+}
+
+.rank {
+	border: 1px solid var(--border);
+	border-radius: 8px;
+	padding: 0.4rem 0.6rem;
+}
+
+.rank.winner {
+	background: var(--winner-bg);
+	border-color: var(--accent);
+}
+
+.rank-top {
+	align-items: baseline;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0 0.5rem;
+}
+
+.rank-place {
+	font-weight: 700;
+}
+
+.rank-name {
+	flex: 1 1 auto;
+	font-weight: 600;
+}
+
+.rank-price {
+	font-weight: 700;
+	white-space: nowrap;
+}
+
+.rank .rank-kind,
+.rank .rank-text {
+	color: var(--muted);
+	font-size: 0.875rem;
+	margin: 0.1rem 0 0;
+}
+
+/* ------------------------------------------------------------- update */
+
+.update {
+	align-items: center;
+	background: var(--text);
+	border-radius: 12px;
+	bottom: calc(env(safe-area-inset-bottom) + 12px);
+	color: var(--bg);
+	display: flex;
+	gap: 12px;
+	justify-content: space-between;
+	left: 10px;
+	padding: 6px 6px 6px 14px;
+	position: fixed;
+	right: 10px;
+	z-index: 3;
+}
+
+.update button {
+	background: var(--accent);
+	border: 0;
+	border-radius: 8px;
+	color: var(--on-accent);
+	font-weight: 600;
+	min-height: 2.75rem;
+	padding: 0 1rem;
+}
