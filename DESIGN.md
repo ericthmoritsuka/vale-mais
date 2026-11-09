@@ -27,7 +27,10 @@ those modules rather than share a package, since the two apps will move at their
 
 **A web app on GitHub Pages, like Eric's other pages.** *(Eric, 2026-11-09.)* A PWA installed on
 the home screen, with a service worker so it opens with no signal, which is common inside a
-supermarket. Supabase holds the shared data (section 8).
+supermarket. Supabase holds the shared data (section 8). GitHub Pages on the free plan serves only public
+repositories, so the repository `ericthmoritsuka/vale-mais` is public, like the card tracker's.
+Nothing private is in it: prices, lists, and photos live in Supabase behind sign-in and
+row-level security, and the Supabase publishable key in the code is meant to be public.
 
 **Tags are read on the phone with OCR.** *(Eric, 2026-11-09.)* Tesseract.js, as in the card
 tracker: free, and it works offline. The cost is accuracy: shelf tags are crowded, glossy, and
@@ -167,11 +170,15 @@ none verified yet (section 12):
    server function (a Supabase Edge Function). Item codes on a receipt are often the store's, so
    matching them to products needs the EAN where the receipt carries it, and a one-time link
    where it does not.
-2. **State price services built on NFC-e data**, which show prices across all stores in a city:
-   Menor Preço (Paraná), Preço da Hora (Bahia, Paraíba), Economiza Alagoas. Which one applies
-   depends on where the family shops, and whether any offers an API is unknown.
-3. **Cosmos (Bluesoft):** product data by EAN, including a name, an image, and an average price.
-   It has an API; the free tier's limits and terms are unknown.
+2. **State price services.** The family shops in Recife, Pernambuco, at first. Sefaz-PE
+   announced **Menor Preço Pernambuco**, the Paraná tax secretariat's Menor Preço app adopted for
+   the state: search by barcode or product name within up to 20 km, free on Android and iOS.
+   Whether it is still live, whether its prices come from NFC-e data, and whether it has an API
+   any outside app may use are all unknown. Other states have their own (Preço da Hora in Bahia
+   and Paraíba, Economiza Alagoas), which matters only if the family shops elsewhere later.
+3. **Cosmos (Bluesoft):** product data by EAN, including a name, an image, and an average and
+   maximum price, through an API with a token from cosmos.bluesoft.com.br. The free tier's limits
+   and terms are unknown, and developers describe its documentation as thin.
 4. **Open Food Facts and Open Prices:** free and open, product data and crowd prices by EAN, with
    thin coverage in Brazil.
 
@@ -183,8 +190,6 @@ few grocery items. Revisit after the rest works.
 
 ## 11. Open Questions
 
-- **Which state and city** the family shops in. It decides whether a state price service exists
-  (section 9).
 - **Which stores** the family uses, and which clubs or apps they have joined (section 4).
 - **Which phones** the app must run on. Chrome on Android reads barcodes with the built-in
   `BarcodeDetector`; Safari on iPhone does not, and needs a library such as ZXing.
@@ -201,8 +206,8 @@ few grocery items. Revisit after the rest works.
 - **Cosmos:** free tier limits, terms, and whether its average price is useful for the family's
   products.
 - **Open Food Facts coverage:** look up 20 EANs from the family's pantry.
-- **The family's state:** NFC-e page format, captcha, and whether a state price service has an
-  API.
+- **Pernambuco:** whether Menor Preço Pernambuco is live and has a usable API, and the format of
+  the Sefaz-PE NFC-e page a receipt's QR code opens, including any captcha.
 
 ## 13. Suggested Build Order
 
