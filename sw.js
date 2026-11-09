@@ -18,6 +18,7 @@ const SHELL = [
 	'style.css',
 	'manifest.webmanifest',
 	'js/compare.js',
+	'js/money.js',
 	'js/storage.js',
 	'js/units.js',
 	'icons/apple-touch-icon.png',

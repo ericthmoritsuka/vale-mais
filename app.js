@@ -8,6 +8,7 @@
 
 import {DIMENSIONS, UNITS, formatMoney, formatUnitPrice, unitName} from './js/units.js';
 import {compare} from './js/compare.js';
+import {pastedPrice, storedPrice, typedPrice} from './js/money.js';
 import {MAX_PRODUCTS, blankProduct, clearProducts, loadProducts, saveProducts} from './js/storage.js';
 
 const MIN_PRODUCTS = 2;
@@ -24,6 +25,13 @@ const resultBody = document.getElementById('result-body');
 const openValues = new Set();
 
 let products = loadProducts() || [blankProduct(), blankProduct()];
+
+// Prices saved by v1 are the text as typed ("22.50", "7"); show them the
+// way cash-register entry writes them ("22,50", "7,00").
+for (const product of products) {
+	product.price = storedPrice(product.price);
+	product.tagPrice = storedPrice(product.tagPrice);
+}
 
 while (products.length < MIN_PRODUCTS) {
 	products.push(blankProduct(products[products.length - 1]?.unit));
@@ -257,6 +265,62 @@ function kindText(index, evaluated) {
 	return 'Usando preço normal.';
 }
 
+// ------------------------------------------------ cash-register prices
+
+// A price field (data-money) holds digits only, filled from the right with
+// two decimals (js/money.js). Each input event re-reads the digits from
+// whatever the field now holds and writes the value back, with the caret at
+// the end. That works with Gboard on Android, which sends input events but
+// often no usable keydown.
+function isMoney(target) {
+	return target instanceof HTMLInputElement && target.hasAttribute('data-money');
+}
+
+function caretToEnd(input) {
+	const end = input.value.length;
+
+	if (input.selectionStart !== end || input.selectionEnd !== end) {
+		input.setSelectionRange(end, end);
+	}
+}
+
+function writeMoney(input, value) {
+	input.value = value;
+
+	if (document.activeElement === input) {
+		caretToEnd(input);
+	}
+}
+
+// A paste replaces the field, reading "12,99" as 12,99 and "5" as 0,05.
+list.addEventListener('paste', (event) => {
+	if (!isMoney(event.target)) {
+		return;
+	}
+
+	event.preventDefault();
+	writeMoney(event.target, pastedPrice(event.clipboardData?.getData('text') || ''));
+	event.target.dispatchEvent(new Event('input', {bubbles: true}));
+});
+
+// Keep the caret at the end: a tap in the middle of 12,99 would otherwise
+// put the next digit there.
+for (const type of ['focusin', 'click']) {
+	list.addEventListener(type, (event) => {
+		if (isMoney(event.target)) {
+			requestAnimationFrame(() => caretToEnd(event.target));
+		}
+	});
+}
+
+document.addEventListener('selectionchange', () => {
+	const input = document.activeElement;
+
+	if (isMoney(input) && input.selectionStart === input.selectionEnd) {
+		caretToEnd(input);
+	}
+});
+
 // -------------------------------------------------------------- events
 
 list.addEventListener('input', (event) => {
@@ -265,6 +329,14 @@ list.addEventListener('input', (event) => {
 
 	if (!field || !card) {
 		return;
+	}
+
+	if (isMoney(event.target)) {
+		// Several characters at once from the keyboard (a clipboard chip on
+		// Gboard) count as a paste.
+		const pasted = event.inputType === 'insertText' && event.data?.length > 1;
+
+		writeMoney(event.target, pasted ? pastedPrice(event.data) : typedPrice(event.target.value));
 	}
 
 	products[Number(card.dataset.index)][field] = event.target.value;

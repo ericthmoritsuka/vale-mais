@@ -24,7 +24,7 @@
 
 	<main class="page">
 		<h2 class="screen-title">Comparar</h2>
-		<p class="hint">Preencha preço, quantidade e tamanho. O resultado aparece embaixo.</p>
+		<p class="hint">Preencha preço, quantidade e tamanho. No preço, digite só os números: 324 vira 3,24. O resultado aparece embaixo.</p>
 
 		<div class="products" id="products"></div>
 
@@ -66,7 +66,7 @@
 			<div class="row">
 				<label class="field">
 					<span class="label">Preço (R$)</span>
-					<input data-field="price" type="text" inputmode="decimal" autocomplete="off" enterkeyhint="next" placeholder="0,00">
+					<input data-field="price" data-money type="text" inputmode="numeric" autocomplete="off" enterkeyhint="next" placeholder="0,00">
 				</label>
 				<label class="field">
 					<span class="label">Qtd. no pacote</span>
@@ -131,7 +131,7 @@
 				</label>
 				<label class="field">
 					<span class="label" data-out="tag-label">Preço por kg na etiqueta</span>
-					<input data-field="tagPrice" type="text" inputmode="decimal" autocomplete="off" placeholder="0,00">
+					<input data-field="tagPrice" data-money type="text" inputmode="numeric" autocomplete="off" placeholder="0,00">
 				</label>
 			</details>
 

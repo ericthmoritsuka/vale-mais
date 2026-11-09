@@ -57,7 +57,7 @@ describe('app shell', () => {
 
 	test('no em dash anywhere in the app', async () => {
 		const emDash = String.fromCharCode(0x2014);
-		const files = ['index.html', 'app.js', 'style.css', 'sw.js', 'manifest.webmanifest', 'README.md', 'CHANGELOG.md', 'js/compare.js', 'js/storage.js', 'js/units.js'];
+		const files = ['index.html', 'app.js', 'style.css', 'sw.js', 'manifest.webmanifest', 'README.md', 'CHANGELOG.md', 'js/compare.js', 'js/money.js', 'js/storage.js', 'js/units.js'];
 
 		for (const file of files) {
 			assert.ok(!(await read(file)).includes(emDash), `${file} has an em dash`);
