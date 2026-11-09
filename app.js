@@ -6,7 +6,7 @@
 // lines change while the person types, so the field being typed in never
 // loses focus.
 
-import {DIMENSIONS, UNITS, formatUnitPrice} from './js/units.js';
+import {DIMENSIONS, UNITS, formatMoney, formatUnitPrice, unitName} from './js/units.js';
 import {compare} from './js/compare.js';
 import {MAX_PRODUCTS, blankProduct, clearProducts, loadProducts, saveProducts} from './js/storage.js';
 
@@ -160,7 +160,7 @@ function renderResult(result) {
 			const top = element('div', 'rank-top');
 
 			top.append(element('span', 'rank-place', `${row.rank}º`), element('span', 'rank-name', row.name), element('span', 'rank-price', formatUnitPrice(row.unitPrice, item.dimension)));
-			entry.append(top, element('p', 'rank-kind', `Usando preço ${evaluated.kindLabel}${kindDetail(row.index, evaluated)}.`));
+			entry.append(top, element('p', 'rank-kind', kindText(row.index, evaluated)));
 
 			if (row.text) {
 				entry.append(element('p', 'rank-text', row.text));
@@ -175,7 +175,7 @@ function renderResult(result) {
 
 	for (const item of result.alone) {
 		if (result.groups.length || result.incompatible.length) {
-			parts.push(element('p', 'note', `${item.name} ficou de fora: nenhum outro produto em ${DIMENSIONS[item.dimension].label}.`));
+			parts.push(element('p', 'note', `${item.name} ficou de fora: nenhum outro produto em ${unitName(item.dimension)}.`));
 		}
 	}
 
@@ -186,18 +186,25 @@ function renderResult(result) {
 	resultBody.replaceChildren(...parts);
 }
 
-function kindDetail(index, evaluated) {
+// The price a ranking row used, named by its kind (DESIGN.md section 4).
+function kindText(index, evaluated) {
 	const product = products[index];
 
+	if (product.kind === 'clube') {
+		return 'Usando preço Clube/app.';
+	}
+
 	if (product.kind === 'atacarejo') {
-		return evaluated.minQty ? `, só levando ${evaluated.minQty} ou mais` : '';
+		return evaluated.minQty ? `Usando preço de atacarejo, só levando ${evaluated.minQty} ou mais.` : 'Usando preço de atacarejo.';
 	}
 
 	if (product.kind === 'leve') {
-		return ` (Leve ${product.leveX.trim()} Pague ${product.pagueY.trim()})`;
+		const x = product.leveX.trim();
+
+		return `Usando Leve ${x} Pague ${product.pagueY.trim()}: ${formatMoney(evaluated.effectivePrice)} cada, levando ${x}.`;
 	}
 
-	return '';
+	return 'Usando preço normal.';
 }
 
 // -------------------------------------------------------------- events

@@ -7,6 +7,8 @@
 	--accent-soft: #e2f3ea;
 	--bg: #f3f5f3;
 	--border: #cfd6d1;
+	--header-bg: #0b6e4f;
+	--header-text: #ffffff;
 	--muted: #59625c;
 	--on-accent: #ffffff;
 	--surface: #ffffff;
@@ -25,6 +27,8 @@
 		--accent-soft: #173527;
 		--bg: #111613;
 		--border: #34403a;
+		--header-bg: #173527;
+		--header-text: #e8eeea;
 		--muted: #a3ada7;
 		--on-accent: #0b1a12;
 		--surface: #1b211e;
@@ -70,8 +74,8 @@ select {
 
 .top {
 	align-items: center;
-	background: var(--accent);
-	color: var(--on-accent);
+	background: var(--header-bg);
+	color: var(--header-text);
 	display: flex;
 	gap: 8px;
 	justify-content: space-between;
@@ -141,11 +145,24 @@ select {
 	align-items: center;
 	display: flex;
 	gap: 8px;
+	min-height: 2.75rem;
 }
 
 .card-title {
 	font-size: 1.05rem;
 	margin: 0;
+	white-space: nowrap;
+}
+
+.price-line {
+	align-items: center;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.25rem 0.6rem;
+}
+
+.price-line:has(.unit-price:empty) {
+	display: none;
 }
 
 .badge {
@@ -170,6 +187,7 @@ select {
 	margin-left: auto;
 	min-height: 2.75rem;
 	padding: 0 0.75rem;
+	white-space: nowrap;
 }
 
 .row {
@@ -283,6 +301,7 @@ summary:focus-visible {
 	border-radius: 12px;
 	margin-top: 16px;
 	padding: 10px 12px 12px;
+	scroll-margin-top: 4.5rem;
 }
 
 .result-title {

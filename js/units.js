@@ -156,6 +156,11 @@ export function priceUnitLabel(dimension) {
 	return 'R$/' + DIMENSIONS[dimension].label;
 }
 
+// The unit a dimension is named by in a sentence: "kg", "folhas".
+export function unitName(dimension) {
+	return dimension === 'sheets' ? 'folhas' : DIMENSIONS[dimension].label;
+}
+
 // "R$ 0,0608/m", "R$ 2,35/100 folhas".
 export function formatUnitPrice(value, dimension) {
 	return formatMoney(value) + '/' + DIMENSIONS[dimension].label;

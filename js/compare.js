@@ -10,7 +10,7 @@
 //
 // kind is 'normal', 'clube', 'atacarejo', or 'leve'.
 
-import {DIMENSIONS, UNITS, baseQuantity, formatMoney, formatPercent, formatQuantity, formatUnitPrice, parseNumber} from './units.js';
+import {DIMENSIONS, UNITS, baseQuantity, formatMoney, formatPercent, formatQuantity, formatUnitPrice, parseNumber, unitName} from './units.js';
 
 // Two unit prices within this many percent are "praticamente igual".
 export const TIE_PERCENT = 0.5;
@@ -199,11 +199,6 @@ export function compare(products) {
 	}
 
 	return {alone, complete: complete.length, evaluated, groups, incompatible};
-}
-
-// The unit as the incompatible message names it.
-function unitName(dimension) {
-	return dimension === 'sheets' ? 'folhas' : DIMENSIONS[dimension].label;
 }
 
 function rankGroup(dimension, items, products) {

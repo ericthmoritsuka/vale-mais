@@ -45,7 +45,6 @@
 		<article class="card">
 			<header class="card-head">
 				<h3 class="card-title"></h3>
-				<span class="badge" hidden></span>
 				<button class="remove" type="button" data-action="remove">Remover</button>
 			</header>
 
@@ -91,7 +90,7 @@
 				<select data-field="kind">
 					<option value="normal">Normal</option>
 					<option value="clube">Clube/app</option>
-					<option value="atacarejo">Atacarejo (a partir de N un.)</option>
+					<option value="atacarejo">Atacarejo</option>
 					<option value="leve">Leve X Pague Y</option>
 				</select>
 			</label>
@@ -127,7 +126,10 @@
 			</details>
 
 			<div class="card-out">
-				<p class="unit-price" data-out="unit-price"></p>
+				<div class="price-line">
+					<span class="unit-price" data-out="unit-price"></span>
+					<span class="badge" hidden></span>
+				</div>
 				<p class="note" data-out="notes"></p>
 				<p class="warn" data-out="tag" hidden></p>
 				<p class="missing" data-out="missing"></p>
