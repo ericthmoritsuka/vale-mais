@@ -144,11 +144,23 @@ export function formatQuantity(value) {
 	return new Intl.NumberFormat('pt-BR', {maximumFractionDigits: 3}).format(value);
 }
 
-// A percent: whole from 10 up ("13%"), one decimal below ("2,3%", "4%").
+// A percent: whole from 2 up ("13%", "2%"), and one decimal below, where a
+// whole number would hide the difference ("1,4%", "0,7%").
 export function formatPercent(value) {
-	const decimals = value >= 10 ? 0 : 1;
+	const decimals = value >= 2 ? 0 : 1;
 
 	return new Intl.NumberFormat('pt-BR', {maximumFractionDigits: decimals}).format(value) + '%';
+}
+
+// Reais with exactly two decimals, for an amount spent or saved:
+// "R$ 3,03", "R$ 1.299,90". An amount that rounds to zero is "menos de
+// R$ 0,01", so a real saving is never shown as R$ 0,00.
+export function formatReais(value) {
+	if (value > 0 && value < 0.005) {
+		return 'menos de R$ 0,01';
+	}
+
+	return 'R$ ' + ptBR(value, 2);
 }
 
 // The unit price label for a dimension: "R$/kg", "R$/100 folhas".

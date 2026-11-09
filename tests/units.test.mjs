@@ -6,7 +6,7 @@
 import assert from 'node:assert/strict';
 import {describe, test} from 'node:test';
 
-import {baseQuantity, formatMoney, formatPercent, formatQuantity, formatUnitPrice, parseNumber, priceUnitLabel} from '../js/units.js';
+import {baseQuantity, formatMoney, formatPercent, formatQuantity, formatReais, formatUnitPrice, parseNumber, priceUnitLabel} from '../js/units.js';
 
 describe('parseNumber', () => {
 	test('reads a decimal comma and a decimal dot', () => {
@@ -88,7 +88,20 @@ describe('formatting', () => {
 		assert.equal(formatQuantity(1.2), '1,2');
 		assert.equal(formatQuantity(1200), '1.200');
 		assert.equal(formatPercent(13.48), '13%');
-		assert.equal(formatPercent(2.34), '2,3%');
 		assert.equal(formatPercent(4), '4%');
+	});
+
+	test('percents are whole from 2% up and keep one decimal below', () => {
+		assert.equal(formatPercent(2.34), '2%');
+		assert.equal(formatPercent(1.98), '2%');
+		assert.equal(formatPercent(1.38), '1,4%');
+		assert.equal(formatPercent(0.7), '0,7%');
+	});
+
+	test('reais always have two decimals', () => {
+		assert.equal(formatReais(3.0333), 'R$ 3,03');
+		assert.equal(formatReais(1299.9), 'R$ 1.299,90');
+		assert.equal(formatReais(0.034), 'R$ 0,03');
+		assert.equal(formatReais(0.004), 'menos de R$ 0,01');
 	});
 });

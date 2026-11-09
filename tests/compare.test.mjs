@@ -83,8 +83,8 @@ describe('compare', () => {
 
 		assert.equal(result.groups.length, 1);
 		assert.deepEqual(group.winners, [0]);
-		assert.equal(group.headline, 'Papel A sai 13% mais barato por metro.');
-		assert.equal(group.detail, 'R$ 0,00948 a menos por metro que Papel B.');
+		assert.equal(group.headline, 'Papel A sai 13% mais barato.');
+		assert.equal(group.rows[1].text, 'O 1º sai 13% mais barato.');
 		near(group.rows[1].diffPercent, 13.48, 2);
 		assert.equal(group.tipoWarning, null, 'folha dupla and "Folha Dupla " are the same tipo');
 	});
@@ -98,8 +98,10 @@ describe('compare', () => {
 		const rows = result.groups[0].rows;
 
 		assert.deepEqual(rows.map((row) => [row.rank, row.name]), [[1, 'Produto B'], [2, 'Produto A'], [3, 'Produto C']]);
-		assert.equal(result.groups[0].headline, 'Produto B sai 20% mais barato por quilo.');
-		assert.equal(rows[2].text, 'O 1º sai 33% mais barato (R$ 4,00 a menos por quilo).');
+		assert.equal(result.groups[0].headline, 'Produto B sai 20% mais barato que Produto A.');
+		assert.equal(rows[1].text, 'O 1º sai 20% mais barato.');
+		assert.equal(rows[2].text, 'O 1º sai 33% mais barato.');
+		assert.deepEqual(result.groups[0].values.map((line) => line.perUnit), ['R$ 2,00 a menos por quilo que Produto A.', 'R$ 4,00 a menos por quilo que Produto C.']);
 	});
 
 	test('within 0.5% is praticamente igual', () => {
@@ -147,12 +149,83 @@ describe('compare', () => {
 		const result = compare([PAPEL_A, {...PAPEL_B, tipo: 'folha simples'}]);
 
 		assert.equal(result.groups[0].tipoWarning, 'Atenção: tipos diferentes (folha dupla × folha simples).');
-		assert.equal(result.groups[0].headline, 'Papel A sai 13% mais barato por metro.');
+		assert.equal(result.groups[0].headline, 'Papel A sai 13% mais barato.');
 	});
 
 	test('a tipo on only one product is no warning', () => {
 		assert.equal(tipoWarning(['folha dupla', '']), null);
 		assert.equal(tipoWarning([' Folha  dupla', 'folha dupla']), null);
+	});
+});
+
+describe('percent first', () => {
+	test('states the cheaper one as X% cheaper, 1 - cheaper / other, never turned around', () => {
+		const result = compare([PAPEL_B, PAPEL_A]);
+		const [group] = result.groups;
+
+		// 0,0608 against 0,0703: 13.5% cheaper, which is 15.6% more
+		// expensive the other way; only the first is ever written.
+		near(group.rows[1].diffPercent, (1 - 21.9 / 360 / (22.5 / 320)) * 100);
+		assert.equal(group.headline, 'Papel A sai 13% mais barato.');
+		assert.ok(!/mais caro/.test(group.headline + group.rows[1].text));
+	});
+
+	test('below 2% the percent keeps one decimal', () => {
+		const group = compare([{price: '10,00', size: '1', unit: 'kg'}, {price: '10,14', size: '1', unit: 'kg'}]).groups[0];
+
+		assert.equal(group.headline, 'Produto A sai 1,4% mais barato.');
+		assert.equal(group.rows[1].text, 'O 1º sai 1,4% mais barato.');
+	});
+
+	test('a tie has no percent and no values', () => {
+		const group = compare([{price: '10,00', size: '1', unit: 'kg'}, {price: '10,05', size: '1', unit: 'kg'}]).groups[0];
+
+		assert.equal(group.headline, 'Praticamente igual por quilo: Produto A e Produto B.');
+		assert.equal(group.rows[1].text, 'Praticamente igual ao 1º.');
+		assert.deepEqual(group.values, []);
+	});
+});
+
+describe('values behind Ver valores', () => {
+	test('the toilet paper example: per meter and for the same 320 m', () => {
+		const [group] = compare([PAPEL_A, PAPEL_B]).groups;
+
+		near(group.rows[1].saving, 22.5 - (21.9 / 360) * 320);
+		assert.deepEqual(group.values, [
+			{
+				index: 1,
+				perUnit: 'R$ 0,00948 a menos por metro que Papel B.',
+				saving: 'Levando a mesma quantidade do Papel B (320 m), você economiza R$ 3,03 com o Papel A.',
+			},
+		]);
+	});
+
+	test('Leve 3 Pague 2 uses the effective price and says it assumes the set', () => {
+		const [group] = compare([
+			{kind: 'leve', leveX: '3', pagueY: '2', name: 'Suco A', price: '12,99', size: '1', unit: 'L'},
+			{name: 'Suco B', price: '10,00', size: '1', unit: 'L'},
+		]).groups;
+
+		assert.equal(group.headline, 'Suco A sai 13% mais barato.');
+		near(group.rows[1].saving, 10 - 8.66);
+		assert.equal(group.values[0].saving, 'Levando a mesma quantidade do Suco B (1 L), você economiza R$ 1,34 com o Suco A. A conta considera o Leve 3 Pague 2 do Suco A, levando 3.');
+	});
+
+	test('a multibuy on the dearer product counts its own quantity, priced as the set', () => {
+		const [group] = compare([
+			{name: 'Arroz A', price: '20', size: '5', unit: 'kg'},
+			{kind: 'leve', leveX: '4', pagueY: '3', name: 'Arroz B', pack: '2', price: '12', size: '1', unit: 'kg'},
+		]).groups;
+
+		// B: 12 × 3 ÷ 4 = 9 for 2 kg, R$ 4,50/kg; A: R$ 4,00/kg. Same 2 kg: R$ 1,00.
+		assert.equal(group.values[0].saving, 'Levando a mesma quantidade do Arroz B (2 kg), você economiza R$ 1,00 com o Arroz A. A conta considera o Leve 4 Pague 3 do Arroz B, levando 4.');
+	});
+
+	test('sheets count the purchase in sheets, not in hundreds', () => {
+		const [group] = compare([{price: '6', size: '120', unit: 'folhas'}, {price: '6', size: '100', unit: 'folhas'}]).groups;
+
+		near(group.rows[1].saving, 1);
+		assert.equal(group.values[0].saving, 'Levando a mesma quantidade do Produto B (100 folhas), você economiza R$ 1,00 com o Produto A.');
 	});
 });
 

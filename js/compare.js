@@ -10,7 +10,7 @@
 //
 // kind is 'normal', 'clube', 'atacarejo', or 'leve'.
 
-import {DIMENSIONS, UNITS, baseQuantity, formatMoney, formatPercent, formatQuantity, formatUnitPrice, parseNumber, unitName} from './units.js';
+import {DIMENSIONS, UNITS, baseQuantity, formatMoney, formatPercent, formatQuantity, formatReais, formatUnitPrice, parseNumber, unitName} from './units.js';
 
 // Two unit prices within this many percent are "praticamente igual".
 export const TIE_PERCENT = 0.5;
@@ -55,6 +55,7 @@ export function evaluate(product) {
 		dimension: null,
 		effectivePrice: null,
 		kindLabel: KINDS[product.kind] || KINDS.normal,
+		leve: null,
 		missing: [],
 		notes: [],
 		nominalUnitPrice: null,
@@ -115,6 +116,7 @@ export function evaluate(product) {
 			result.missing.push('Leve X Pague Y (X maior que Y)');
 		}
 		else if (price > 0) {
+			result.leve = {x, y};
 			effectivePrice = (price * y) / x;
 			result.notes.push(`Leve ${x} Pague ${y}: a conta usa ${formatMoney(effectivePrice)} cada (${formatMoney(price)} × ${y} ÷ ${x}), levando ${x}.`);
 		}
@@ -201,8 +203,17 @@ export function compare(products) {
 	return {alone, complete: complete.length, evaluated, groups, incompatible};
 }
 
+// One group ranked by unit price. Every comparison is stated as the cheaper
+// product being X% cheaper than the other, 1 - cheaper / other: 13% cheaper
+// is not 13% more expensive (that is 15.6%), so the app never turns the
+// number around.
+//
+// The headline and the rows carry the percent. The reais behind it, per unit
+// and for a whole purchase, are in `values`, which the screen keeps behind
+// "Ver valores".
 function rankGroup(dimension, items, products) {
 	const word = DIMENSIONS[dimension].word;
+	const per = DIMENSIONS[dimension].per;
 	const ranked = [...items].sort((a, b) => a.unitPrice - b.unitPrice || a.index - b.index);
 	const best = ranked[0];
 
@@ -216,35 +227,57 @@ function rankGroup(dimension, items, products) {
 			index: item.index,
 			name: item.name,
 			rank: position + 1,
+
+			// Buying this product's own quantity at the 1st's unit price.
+			saving: (diffValue / per) * item.quantity,
 			tie: position > 0 && diffPercent <= TIE_PERCENT + 1e-9,
 			unitPrice: item.unitPrice,
 		};
 	});
 
 	const tied = rows.filter((row) => row.rank === 1 || row.tie);
+	const others = rows.filter((row) => row.rank > 1 && !row.tie);
 	let headline;
-	let detail = '';
 
 	if (tied.length > 1) {
 		headline = `Praticamente igual por ${word}: ${joinNames(tied.map((row) => row.name))}.`;
 	}
+	else if (rows.length === 2) {
+		headline = `${best.name} sai ${formatPercent(rows[1].diffPercent)} mais barato.`;
+	}
 	else {
-		const second = rows[1];
-
-		headline = `${best.name} sai ${formatPercent(second.diffPercent)} mais barato por ${word}.`;
-		detail = `${formatMoney(second.diffValue)} a menos por ${word} que ${second.name}.`;
+		headline = `${best.name} sai ${formatPercent(rows[1].diffPercent)} mais barato que ${rows[1].name}.`;
 	}
 
 	for (const row of rows.slice(1)) {
-		row.text = row.tie ? 'Praticamente igual ao 1º.' : `O 1º sai ${formatPercent(row.diffPercent)} mais barato (${formatMoney(row.diffValue)} a menos por ${word}).`;
+		row.text = row.tie ? 'Praticamente igual ao 1º.' : `O 1º sai ${formatPercent(row.diffPercent)} mais barato.`;
+	}
+
+	const values = [];
+
+	for (const row of others) {
+		const other = items.find((item) => item.index === row.index);
+		const quantity = `${formatQuantity(other.quantity)} ${DIMENSIONS[dimension].base}`;
+		const multibuy = [best, other].filter((item) => item.leve).map((item) => `o Leve ${item.leve.x} Pague ${item.leve.y} do ${item.name}, levando ${item.leve.x}`);
+		let saving = `Levando a mesma quantidade do ${row.name} (${quantity}), você economiza ${formatReais(row.saving)} com o ${best.name}.`;
+
+		if (multibuy.length) {
+			saving += ` A conta considera ${joinNames(multibuy)}.`;
+		}
+
+		values.push({
+			index: row.index,
+			perUnit: `${formatMoney(row.diffValue)} a menos por ${word} que ${row.name}.`,
+			saving,
+		});
 	}
 
 	return {
-		detail,
 		dimension,
 		headline,
 		rows,
 		tipoWarning: tipoWarning(items.map((item) => products[item.index].tipo)),
+		values,
 		winners: tied.map((row) => row.index),
 	};
 }
