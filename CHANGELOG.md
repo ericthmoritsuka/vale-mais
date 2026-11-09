@@ -9,7 +9,7 @@ O que mudou no Vale Mais, do mais novo para o mais antigo.
   e até 0,5% continua "praticamente igual".
 - **Ver valores:** os valores em reais ficam atrás de um toque. Ali aparecem a diferença por
   unidade (R$ 0,00948 a menos por metro) e quanto você economiza levando a mesma quantidade do
-  outro produto (R$ 3,03 nos 320 m do Papel B). Quando a conta usa um Leve X Pague Y, ela avisa
+  outro produto (R$ 3,03 nos 320 m de Papel B). Quando a conta usa um Leve X Pague Y, ela avisa
   que considera levar o conjunto.
 - O preço por unidade de cada produto e os avisos continuam sempre à vista.
 - **Preço digitado como no caixa:** no preço e no preço por unidade da etiqueta, digite só os

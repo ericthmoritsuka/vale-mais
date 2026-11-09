@@ -258,8 +258,8 @@ function rankGroup(dimension, items, products) {
 	for (const row of others) {
 		const other = items.find((item) => item.index === row.index);
 		const quantity = `${formatQuantity(other.quantity)} ${DIMENSIONS[dimension].base}`;
-		const multibuy = [best, other].filter((item) => item.leve).map((item) => `o Leve ${item.leve.x} Pague ${item.leve.y} do ${item.name}, levando ${item.leve.x}`);
-		let saving = `Levando a mesma quantidade do ${row.name} (${quantity}), você economiza ${formatReais(row.saving)} com o ${best.name}.`;
+		const multibuy = [best, other].filter((item) => item.leve).map((item) => `o Leve ${item.leve.x} Pague ${item.leve.y} de ${item.name}, levando ${item.leve.x}`);
+		let saving = `Levando a mesma quantidade de ${row.name} (${quantity}), você economiza ${formatReais(row.saving)} escolhendo ${best.name}.`;
 
 		if (multibuy.length) {
 			saving += ` A conta considera ${joinNames(multibuy)}.`;

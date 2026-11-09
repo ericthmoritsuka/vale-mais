@@ -195,7 +195,7 @@ describe('values behind Ver valores', () => {
 			{
 				index: 1,
 				perUnit: 'R$ 0,00948 a menos por metro que Papel B.',
-				saving: 'Levando a mesma quantidade do Papel B (320 m), você economiza R$ 3,03 com o Papel A.',
+				saving: 'Levando a mesma quantidade de Papel B (320 m), você economiza R$ 3,03 escolhendo Papel A.',
 			},
 		]);
 	});
@@ -208,7 +208,7 @@ describe('values behind Ver valores', () => {
 
 		assert.equal(group.headline, 'Suco A sai 13% mais barato.');
 		near(group.rows[1].saving, 10 - 8.66);
-		assert.equal(group.values[0].saving, 'Levando a mesma quantidade do Suco B (1 L), você economiza R$ 1,34 com o Suco A. A conta considera o Leve 3 Pague 2 do Suco A, levando 3.');
+		assert.equal(group.values[0].saving, 'Levando a mesma quantidade de Suco B (1 L), você economiza R$ 1,34 escolhendo Suco A. A conta considera o Leve 3 Pague 2 de Suco A, levando 3.');
 	});
 
 	test('a multibuy on the dearer product counts its own quantity, priced as the set', () => {
@@ -218,14 +218,14 @@ describe('values behind Ver valores', () => {
 		]).groups;
 
 		// B: 12 × 3 ÷ 4 = 9 for 2 kg, R$ 4,50/kg; A: R$ 4,00/kg. Same 2 kg: R$ 1,00.
-		assert.equal(group.values[0].saving, 'Levando a mesma quantidade do Arroz B (2 kg), você economiza R$ 1,00 com o Arroz A. A conta considera o Leve 4 Pague 3 do Arroz B, levando 4.');
+		assert.equal(group.values[0].saving, 'Levando a mesma quantidade de Arroz B (2 kg), você economiza R$ 1,00 escolhendo Arroz A. A conta considera o Leve 4 Pague 3 de Arroz B, levando 4.');
 	});
 
 	test('sheets count the purchase in sheets, not in hundreds', () => {
 		const [group] = compare([{price: '6', size: '120', unit: 'folhas'}, {price: '6', size: '100', unit: 'folhas'}]).groups;
 
 		near(group.rows[1].saving, 1);
-		assert.equal(group.values[0].saving, 'Levando a mesma quantidade do Produto B (100 folhas), você economiza R$ 1,00 com o Produto A.');
+		assert.equal(group.values[0].saving, 'Levando a mesma quantidade de Produto B (100 folhas), você economiza R$ 1,00 escolhendo Produto A.');
 	});
 });
 
