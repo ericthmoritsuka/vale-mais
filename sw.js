@@ -5,7 +5,7 @@
 // sw.js changed, installs the new cache, and waits until the person taps
 // Atualizar (app.js); then the old cache is deleted.
 
-const VERSION = 'v1';
+const VERSION = 'v2';
 const PREFIX = 'vale-mais-shell-';
 const CACHE = PREFIX + VERSION;
 
