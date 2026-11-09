@@ -148,7 +148,23 @@ on the list ticks it and records its price, so shopping fills the history withou
 ## 8. Data Model and Storage
 
 Supabase tables, with row-level security by family group, and an IndexedDB copy on each phone
-that is written first and synced when online.
+that is written first and synced when online. Version 1 and 2 keep only the current comparison,
+in the phone's localStorage; this section starts with build step 3.
+
+**The card tracker's Supabase project, in a schema of its own.** *(Eric, 2026-11-09.)* The free
+plan pauses a project after a week without use, and the family does not shop every week, while
+the card tracker is used daily: sharing its project keeps this one awake. Sharing also brings the
+same sign-in and the same family group. The tables live in a Postgres schema `vale_mais`, exposed
+to the API alongside the card tracker's, so neither app reads the other's tables and the
+Supabase table editor shows them apart. Space is not a concern: a price row is a few hundred
+bytes, and tag photos are not kept for long (a 30-day limit, like the card tracker's scan
+reports), so the app stays far inside the free plan's 500 MB database and 1 GB of files.
+
+**Editing by hand** happens in the Supabase table editor, which is a spreadsheet in the browser,
+and in a products screen in the app. Google Sheets as the database was considered and rejected:
+the Google sign-in token expires every hour and can ask to sign in again at the shelf, and every
+write is slower. A one-way copy into a Google Sheet, for looking and analysing only, can come
+later if wanted.
 
 - `stores`: id, name, chain, latitude, longitude, CNPJ (filled from a receipt), group.
 - `products`: id, EAN or null, name, brand, size amount, size unit, pack count, ply or other
@@ -193,9 +209,6 @@ few grocery items. Revisit after the rest works.
 - **Which stores** the family uses, and which clubs or apps they have joined (section 4).
 - **Which phones** the app must run on. Chrome on Android reads barcodes with the built-in
   `BarcodeDetector`; Safari on iPhone does not, and needs a library such as ZXing.
-- **Same Supabase project as the card tracker, or a new one.** The same project keeps the same
-  accounts and family group with new tables; a new one keeps the apps fully apart and needs a
-  second sign-in.
 - **The app's name.**
 
 ## 12. Verify Before Building
